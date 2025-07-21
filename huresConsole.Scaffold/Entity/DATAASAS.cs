@@ -165,5 +165,5 @@ public partial class DATAASAS
 
     public string? KodUlangkaji { get; set; }
 
-    public bool isProgressed { get; set; }
+    public bool isProcessed { get; set; }
 }
