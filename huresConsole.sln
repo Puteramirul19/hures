@@ -1,0 +1,28 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35521.163 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "huresConsole", "huresConsole\huresConsole.csproj", "{6244A7DB-F972-4A82-A07E-E6C91941570C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "huresConsole.scaffold", "huresConsole.Scaffold\huresConsole.Scaffold.csproj", "{2608EE52-4897-456F-9459-7E20D3438D30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6244A7DB-F972-4A82-A07E-E6C91941570C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6244A7DB-F972-4A82-A07E-E6C91941570C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6244A7DB-F972-4A82-A07E-E6C91941570C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6244A7DB-F972-4A82-A07E-E6C91941570C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2608EE52-4897-456F-9459-7E20D3438D30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2608EE52-4897-456F-9459-7E20D3438D30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2608EE52-4897-456F-9459-7E20D3438D30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2608EE52-4897-456F-9459-7E20D3438D30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gaji Asas - Francis Xaviour</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin: auto;
+            background: #e0f0ff;
+            border: 1px solid #000;
+        }
+
+        .header {
+            background-color: #4682B4;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .sub-header {
+            background-color: #d0eaff;
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+            .table th, .table td {
+                border: 1px solid #888;
+                padding: 6px 8px;
+                text-align: center;
+            }
+
+            .table th {
+                background-color: #b0d4f1;
+            }
+
+        .left-align {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">GAJI ASAS {{NamaPekerja}}</div>
+        <div class="sub-header">
+
+            <table style="width: 100%; ">
+                <tr>
+                    <td style="background-color: #b0d4f1; border: 1px solid #888; ">NO PEKERJA</td>
+                    <td style="border: 1px solid #888;">{{NoPekerja}}</td>
+                    <td style="background-color: #b0d4f1; border: 1px solid #888; ">NAMA</td>
+                    <td style="border: 1px solid #888;">{{NamaPekerja}}</td>
+                </tr>
+                <tr>
+                    <td style="background-color: #b0d4f1; border: 1px solid #888; ">STESEN</td>
+                    <td style="border: 1px solid #888;">{{stesen}}</td>
+                    <td style="background-color: #b0d4f1; border: 1px solid #888;">TARIKH MULA KHIDMAT</td>
+                    <td style="border: 1px solid #888;">{{TarikhMulaKhidmat}}</td>
+                </tr>
+            </table>
+
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>TARIKH MULA GAJI</th>
+                    <th>KOD GAJI</th>
+                    <th>SKIL GAJI</th>
+                    <th>GAJI POKOK</th>
+                    <th>KOD PERUBAHAN GAJI</th>
+                    <th>KOD ULANG KAJI</th>
+                    <th>TRKH GAJI NAIK</th>
+                    <th>JUM PERUBAHAN GAJI</th>
+                    <th>JUM ELAUN PRESTASI</th>
+                    <th>NO RUJUKAN</th>
+                </tr>
+            </thead>
+            <tbody id="data-to-add">
+                <tr><td>01-05-1965</td><td></td><td></td><td>104.50</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>2.50</td><td>2.50</td><td>-</td></tr>
+                <tr><td>02-05-1966</td><td></td><td></td><td>107.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>2.50</td><td>2.50</td><td>-</td></tr>
+                <tr><td>01-05-1967</td><td></td><td></td><td>109.50</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>2.50</td><td>2.50</td><td>-</td></tr>
+                <tr><td>01-06-1969</td><td></td><td></td><td>124.00</td><td>NAIK PANGKAT(NP)</td><td></td><td></td><td>12.00</td><td>12.00</td><td>-</td></tr>
+                <tr><td>01-06-1971</td><td></td><td></td><td>150.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>10.00</td><td>10.00</td><td>-</td></tr>
+                <tr><td>01-01-1975</td><td></td><td></td><td>295.00</td><td>KENAIKAN GAJI(UK)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1976</td><td>D35-00</td><td>425X15-590</td><td>345.00</td><td>ULANGKAJI GAJI(UK)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1977</td><td>D10-00</td><td>350X15-380X10/15-500X20=520X25</td><td>425.00</td><td>NAIK PANGKAT(NP)</td><td></td><td>-</td><td>20.00</td><td>20.00</td><td>-</td></tr>
+                <tr><td>01-01-1978</td><td>D10-00</td><td>350X15-380X10/15-500X20=520X25</td><td>445.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1979</td><td>D10-00</td><td>350X15-380X10/15-500X20=520X25</td><td>470.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1980</td><td>D10-00</td><td>350X15-380X10/15-500X20=520X25</td><td>495.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1981</td><td>D10-00</td><td>350X15-380X10/15-500X20=520X25</td><td>520.00</td><td>ULANGKAJI GAJI(UK)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1982</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>545.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1983</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>570.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1984</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>595.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1985</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>620.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1986</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>645.00</td><td>KENAIKAN TAHUNAN(KT)</td><td>LLN</td><td>-</td><td>25.00</td><td>25.00</td><td>-</td></tr>
+                <tr><td>01-01-1987</td><td>D10-00</td><td>375X15-425X15-500X20=520X25</td><td>670.00</td><td>PELARASAN GAJI(PL)</td><td></td><td>-</td><td>50.00</td><td>50.00</td><td>-</td></tr>
+                <tr><td>01-01-1988</td><td>D03-00</td><td>720X20/25=770</td><td>720.00</td><td>(XX)</td><td>LLN</td><td>01-01</td><td>25.00</td><td>25.00</td><td>2/6129</td></tr>
+                <tr><td>01-01-1990</td><td>G6SA-00</td><td>595/620/25=995/1020/25=1070/1105*35</td><td>970.00</td><td>PENGSWASTAAN(SW)</td><td>TNB1</td><td>01-01</td><td>50.00</td><td>50.00</td><td>3/6628</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

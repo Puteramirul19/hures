@@ -1,0 +1,17 @@
+1. be sure terminal is targeting same folder as temp.scaffold.csproj
+2. run below accordingly
+dotnet ef dbcontext scaffold "server=localhost;user=root;password=root;database=hures_backup" \
+Pomelo.EntityFrameworkCore.MySql \
+--output-dir Entity \
+--context-dir Context \
+--context HuresContext \
+--project huresConsole.Scaffold.csproj \
+--force \
+--no-onconfiguring \
+--use-database-names \
+--no-pluralize
+
+***** fixed for amirul pc
+***** single line approach
+1. dotnet ef dbcontext scaffold "server=localhost;port=3309;user=root;password=root;database=hures_backup" Pomelo.EntityFrameworkCore.MySql --output-dir Entity --context-dir Context --context HuresContext --project huresConsole.Scaffold.csproj --force --no-onconfiguring --use-database-names --no-pluralize
+2. dotnet ef dbcontext scaffold "server=localhost;port=3309;user=root;password=root;database=hures_backup" Pomelo.EntityFrameworkCore.MySql --output-dir Entity --context-dir Context --context HuresContext --project huresConsole.Scaffold.csproj --force --use-database-names --no-pluralize

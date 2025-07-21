@@ -1,0 +1,52 @@
+version: '3.1'
+
+services:
+  mysql:
+    image: mysql:5.5.62
+    container_name: mysql55
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3309"
+    volumes:
+      # change path to raw file of (hures's .myd, .myi and .frm)
+      - /c/hures-decomm/hures_backup:/var/lib/mysql/hures_backup
+    
+    # --------------------------------------------
+    # NOTES on Permissions and Client Connections:
+    #
+    # 1. File Permissions:
+    #    - The MySQL process inside the container must be able to read/write the mounted data directory.
+    #    - Windows filesystem permissions differ from Linux, so permission issues can occur.
+    #    - The mounted directory should contain the full MySQL 5.5.62 data directory, including
+    #      'mysql' system database (user grants stored here).
+    #
+    # 2. User Grants and Access:
+    #    - MySQL user permissions are stored inside the data directory.
+    #    - If restoring a backup data directory, user access info comes with it.
+    #    - To add/change user access after startup:
+    #      a) Connect to MySQL container shell:
+    #         docker exec -it mysql55 mysql -uroot -proot
+    #      b) Run SQL commands like (if required, can skip) :
+    #         CREATE USER 'myuser'@'%' IDENTIFIED BY 'mypassword';
+    #         GRANT ALL PRIVILEGES ON *.* TO 'myuser'@'%' WITH GRANT OPTION;
+    #         FLUSH PRIVILEGES;
+    #      c) docker exec -it <container> bash
+    #         chown -R mysql:mysql /var/lib/mysql/hures_backup
+    #         chmod -R 755 /var/lib/mysql/hures_backup
+    #
+    # 3. MySQL Network Binding: !IMPORTANT!
+    #    - By default, MySQL listens on all interfaces (0.0.0.0) inside the container.
+    #    - If needed, create a custom my.cnf file with:
+    #         [mysqld]
+    #         bind-address = 0.0.0.0
+    #      And mount it as a volume:
+    #         - ./my.cnf:/etc/mysql/my.cnf
+    #      Can access via Docker desktop to add.
+    #
+    # 4. Firewall and Network:
+    #    - Make sure your host firewall allows connections on port 3306.
+    #    - Docker exposes port 3306 on your host machine (see ports section).
+    #
+    # --------------------------------------------
