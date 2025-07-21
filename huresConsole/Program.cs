@@ -82,11 +82,36 @@ while (_exit != 'y')
                 // get all unflagged staff
                 foreach (var noPekerja in list)
                 {
-                    // loop thrue everything here
-                    var forNoReason = unitWork.updateProcessedDataAsas(noPekerja);
+                    try
+                    {
+                        Console.WriteLine($"start processing for maklumat asas");
+                        reportingService.maklumat_asas(noPekerja);
+                        Console.WriteLine($"end processing for maklumat asas");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"start processing for gaji asas");
+                        reportingService.gaji_asas(noPekerja);
+                        Console.WriteLine($"end processing for gaji asas");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"start processing for ringkasan cuti");
+                        reportingService.head_ringkasan_cuti(noPekerja);
+                        Console.WriteLine($"end processing for ringkasan cuti");
+                        Console.WriteLine($"");
+                        Console.WriteLine($"start processing for senarai cuti");
+                        reportingService.head_senarai_cuti(noPekerja);
+                        Console.WriteLine($"end processing for senarai cuti");
+                        Console.WriteLine($"");
+
+                        Console.WriteLine($"Process Complete for Staff No : {noPekerja}");
+                        var forNoReason = unitWork.updateProcessedDataAsas(noPekerja);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing {noPekerja}: {ex.Message}");
+                        // Continue with next staff member
+                    }
                 }
 
-                Console.WriteLine("NOT YET IMPLEMENTED");
+                Console.WriteLine("Bulk processing completed!");
             }
             catch (OperationCanceledException)
             {
