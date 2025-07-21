@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using huresConsole.Scaffold.Context;
 
@@ -11,9 +12,11 @@ using huresConsole.Scaffold.Context;
 namespace huresConsole.Scaffold.Migrations
 {
     [DbContext(typeof(HuresContext))]
-    partial class HuresContextModelSnapshot : ModelSnapshot
+    [Migration("20250721022920_AddIsProgressedToDataasas")]
+    partial class AddIsProgressedToDataasas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

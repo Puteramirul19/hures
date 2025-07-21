@@ -164,4 +164,6 @@ public partial class DATAASAS
     public string? KodPerubahanGaji { get; set; }
 
     public string? KodUlangkaji { get; set; }
+
+    public bool isProgressed { get; set; }
 }
