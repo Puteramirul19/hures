@@ -6,6 +6,7 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using System.Globalization;
 using temp.scaffold.Model;
 
 namespace huresConsole.Service
@@ -458,22 +459,35 @@ namespace huresConsole.Service
 
                 // Row 4
                 table.AddCell(new Cell().Add(new Paragraph("TARIKH KUASA")).SetBackgroundColor(cellHeader));
-                
-                if (leave.TarikhKuatkuasa!= "00000000")
+
+                if (leave.TarikhKuatkuasa != "00000000")
                 {
-                    tempDate = string.IsNullOrEmpty(leave.TarikhKuatkuasa)
-                        ? (DateTime?)null
-                        : DateTime.ParseExact(leave.TarikhKuatkuasa, "ddMMyyyy", null);
-                    formatTempDate = tempDate.HasValue ? tempDate.Value.ToString("dd-MM-yyyy") : "";
+                    DateTime tempDateParsed;
+
+                    // Try multiple date formats safely
+                    if (DateTime.TryParseExact(leave.TarikhKuatkuasa, "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out tempDateParsed))
+                    {
+                        formatTempDate = tempDateParsed.ToString("dd-MM-yyyy");
+                    }
+                    else if (DateTime.TryParseExact(leave.TarikhKuatkuasa, "MMddyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out tempDateParsed))
+                    {
+                        formatTempDate = tempDateParsed.ToString("dd-MM-yyyy");
+                    }
+                    else if (DateTime.TryParseExact(leave.TarikhKuatkuasa, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out tempDateParsed))
+                    {
+                        formatTempDate = tempDateParsed.ToString("dd-MM-yyyy");
+                    }
+                    else
+                    {
+                        formatTempDate = "Invalid Date";
+                    }
                 }
                 else
                 {
                     formatTempDate = "";
                 }
-                
+
                 table.AddCell(new Cell().Add(new Paragraph($"{formatTempDate}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"")).SetBackgroundColor(cellValue));
 
                 // Row 5
                 table.AddCell(new Cell().Add(new Paragraph("KELAYAKAN CUTI")).SetBackgroundColor(cellHeader));
