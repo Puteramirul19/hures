@@ -20,12 +20,12 @@ namespace huresConsole.Service
             this.context = context;
             outputPath = configuration["OutputFolder"];
             logPath = configuration["logFolder"];
-            if (!OperatingSystem.IsWindows()) // For non-Windows, adjust outputPath relative to base directory
+            if (!OperatingSystem.IsWindows()) 
             {
                 outputPath = Path.Combine(AppContext.BaseDirectory, "");
+                logPath = Path.Combine(AppContext.BaseDirectory, logPath);
             }
 
-            logPath = Path.Combine(AppContext.BaseDirectory, logPath);
             Directory.CreateDirectory(logPath);
         }
 
@@ -460,15 +460,15 @@ namespace huresConsole.Service
 
         #region logging
 
-        public void Log(string noPekerja, string report,string column, string message)
+        public void Log(string noPekerja, string column, string message)
         {
             string datePart = DateTime.Now.ToString("yyyyMMdd");
             string fileName = $"hures_console_log_{datePart}.txt";
             string filePath = Path.Combine(logPath, fileName);
 
             string logLine =
-                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No Pekerja : {noPekerja}\nReport name : ${report}\nColumn name {column} - {message}\n";
-            
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No Pekerja : {noPekerja}\nColumn name {column} = {message}\n";
+
             File.AppendAllText(filePath, logLine + Environment.NewLine);
         }
 
