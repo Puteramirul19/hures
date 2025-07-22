@@ -484,7 +484,15 @@ namespace huresConsole.Service
                 // Row 6
                 table.AddCell(new Cell().Add(new Paragraph("CUTI LAMA DIBAWA")).SetBackgroundColor(cellHeader));
                 var kodCuti = unitWork.getKodCutibyKtr(leave.CutiLamaDibawa[^1].ToString());
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.cutiLamaDibawa(leave.CutiLamaDibawa,kodCuti.KodLeave) }")).SetBackgroundColor(cellValue));
+                if (kodCuti == null)
+                {
+                    unitWork.Log(asas.NoPekerja, "kodCuti", $"Object reference not set to an instance of an object. kodCuti was null for KtrLeave: {leave.CutiLamaDibawa[^1].ToString()}");
+                    table.AddCell(new Cell().Add(new Paragraph($"{unitWork.cutiLamaDibawa(leave.CutiLamaDibawa, "")}")).SetBackgroundColor(cellValue));
+                }
+                else
+                {
+                    table.AddCell(new Cell().Add(new Paragraph($"{unitWork.cutiLamaDibawa(leave.CutiLamaDibawa, kodCuti.KodLeave)}")).SetBackgroundColor(cellValue));
+                }
                 table.AddCell(new Cell().Add(new Paragraph("TAHUN OPSYEN")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{asas.TahunOpsyen ?? "-"}")).SetBackgroundColor(cellValue));
 
