@@ -288,7 +288,19 @@ namespace huresConsole.Service
 
         public List<GAJI> getGajiListByNoPekerja(string noPekerja)
         {
-            return context.GAJI.Where(w => w.NoPekerja == noPekerja).OrderBy(o => o.TarikhGajiMula).ToList();
+            return context.GAJI.Where(w => w.NoPekerja == noPekerja)
+                .ToList() // Get data first
+                .OrderBy(o => {
+                    try
+                    {
+                        return DateTime.ParseExact(o.TarikhGajiMula, "ddMMyyyy", null);
+                    }
+                    catch
+                    {
+                        return DateTime.MinValue; // Put invalid dates at the beginning
+                    }
+                })
+                .ToList();
         }
 
         public List<LEAVE> getRingkasanCutiByNoPekerja(string noPekerja)
@@ -454,6 +466,11 @@ namespace huresConsole.Service
         public CUTI getCutibyKod(string kod)
         {
             return context.CUTI.Where(w => w.KodCuti == kod).FirstOrDefault();
+        }
+
+        public STESEN getStesenByKod(string kod)
+        {
+            return context.STESEN.Where(w => w.KodStesen == kod).FirstOrDefault();
         }
 
         #endregion

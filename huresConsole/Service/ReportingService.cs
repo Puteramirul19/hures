@@ -22,34 +22,34 @@ namespace huresConsole.Service
 
         static void ReportFlush(string message)
         {
-//             string templatePath = Path.Combine("template", "report_template.html");
-//
-//             if (!File.Exists(templatePath))
-//             {
-//                 Console.WriteLine("Template file not found: " + templatePath);
-//                 return;
-//             }
-//
-//             string html = File.ReadAllText(templatePath);
-//
-//             // Replace placeholders with actual content
-//             html = html.Replace("{{Title}}", "Hello PDF")
-//                 .Replace("{{Body}}", message); // use message parameter here
-// #if DEBUG
-//             outputPath = Path.Combine("output", "");
-// #endif
-//             string dateFolder = DateTime.Now.ToString("yyyyMMdd");
-//             string outputDir = Path.Combine(outputPath, "report", dateFolder);
-//             Directory.CreateDirectory(outputDir);
-//
-//             string outputFilePath = Path.Combine(outputDir, "reportname.pdf");
-//
-//             using (FileStream pdfDest = new FileStream(outputFilePath, FileMode.Create))
-//             {
-//                 HtmlConverter.ConvertToPdf(html, pdfDest);
-//             }
-//
-//             Console.WriteLine("PDF created at: " + outputFilePath);
+            //             string templatePath = Path.Combine("template", "report_template.html");
+            //
+            //             if (!File.Exists(templatePath))
+            //             {
+            //                 Console.WriteLine("Template file not found: " + templatePath);
+            //                 return;
+            //             }
+            //
+            //             string html = File.ReadAllText(templatePath);
+            //
+            //             // Replace placeholders with actual content
+            //             html = html.Replace("{{Title}}", "Hello PDF")
+            //                 .Replace("{{Body}}", message); // use message parameter here
+            // #if DEBUG
+            //             outputPath = Path.Combine("output", "");
+            // #endif
+            //             string dateFolder = DateTime.Now.ToString("yyyyMMdd");
+            //             string outputDir = Path.Combine(outputPath, "report", dateFolder);
+            //             Directory.CreateDirectory(outputDir);
+            //
+            //             string outputFilePath = Path.Combine(outputDir, "reportname.pdf");
+            //
+            //             using (FileStream pdfDest = new FileStream(outputFilePath, FileMode.Create))
+            //             {
+            //                 HtmlConverter.ConvertToPdf(html, pdfDest);
+            //             }
+            //
+            //             Console.WriteLine("PDF created at: " + outputFilePath);
         }
         public void maklumat_asas(string staffNo)
         {
@@ -79,7 +79,7 @@ namespace huresConsole.Service
             {
                 Document document = new Document(pdf);
                 document.SetMargins(10, 10, 10, 10);
-                float[] columnWidths = { 25, 25, 25, 25 }; // Customize per row requirement
+                float[] columnWidths = { 25, 25, 25, 25 };
                 Table table = new Table(UnitValue.CreatePercentArray(columnWidths)).UseAllAvailableWidth();
 
                 // Header
@@ -93,41 +93,38 @@ namespace huresConsole.Service
 
                 table.SetFont(defaultFont).SetFontSize(7);
 
-                // Row 1
+                // Row 1: 
                 table.AddCell(new Cell().Add(new Paragraph("NO PEKERJA")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.NoPekerja}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("NO K/PENGENALAN")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.NoKadPengenalan}")).SetBackgroundColor(cellValue));
 
-                // Row 2
+                // Row 2: 
                 table.AddCell(new Cell().Add(new Paragraph("NAMA")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.NamaPekerja}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("OPSYEN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.Opsyen}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.Opsyen ?? "-"}")).SetBackgroundColor(cellValue));
 
-                // Row 3
+                // Row 3: 
                 table.AddCell(new Cell().Add(new Paragraph("NAMA LAIN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.NamaLain}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.NamaLain ?? "-"}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
 
-                // Row 4
+                // Row 4: 
                 table.AddCell(new Cell().Add(new Paragraph("TARIKH LAHIR")).SetBackgroundColor(cellHeader));
-
-                // SAMPLE 1
                 var tarikhLahir = unitWork.formatDate_dd_mm_yyyy(data.TarikhLahir);
                 if (tarikhLahir.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja,"TarikhLahir",tarikhLahir);
-                    tarikhLahir = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhLahir", $"Could not format date: {data.TarikhLahir}");
+                    tarikhLahir = string.IsNullOrEmpty(data.TarikhLahir) ? "-" : data.TarikhLahir;
                 }
-                
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_dd_mm_yyyy(data.TarikhLahir)}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{tarikhLahir}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("JANTINA")).SetBackgroundColor(cellHeader));
                 var jantina = data.Jantina == "P" ? "PEREMPUAN" : "LELAKI";
                 table.AddCell(new Cell().Add(new Paragraph($"{jantina}")).SetBackgroundColor(cellValue));
 
-                // Row 5
+                // Row 5: 
                 table.AddCell(new Cell().Add(new Paragraph("BANGSA")).SetBackgroundColor(cellHeader));
                 var keturunan = unitWork.getKeturunByKod(data.Keturunan);
                 table.AddCell(new Cell().Add(new Paragraph($"{keturunan.KtrKeturunan}")).SetBackgroundColor(cellValue));
@@ -135,62 +132,68 @@ namespace huresConsole.Service
                 var tarafKahwin = unitWork.getTarafKahwinByKod(data.TarafKahwin);
                 table.AddCell(new Cell().Add(new Paragraph($"{tarafKahwin.KtrTarafKahwin}")).SetBackgroundColor(cellValue));
 
-                // Row 6
-                Cell col3Span = new Cell(1, 1).Add(new Paragraph("ALAMAT")).SetBackgroundColor(cellHeader);
-                var alamat =
-                    $"{data.AlamatBaris1},{data.AlamatBaris2},{data.AlamatBaris3},{data.AlamatBaris4},{data.AlamatBaris5}";
-                Cell col4Span = new Cell(1, 3).Add(new Paragraph($"{alamat}")).SetBackgroundColor(cellValue);
-                table.AddCell(col3Span);
-                table.AddCell(col4Span);
+                // Row 6: 
+                table.AddCell(new Cell().Add(new Paragraph("ALAMAT")).SetBackgroundColor(cellHeader));
+                var alamatParts = new[] { data.AlamatBaris1, data.AlamatBaris2, data.AlamatBaris3, data.AlamatBaris4, data.AlamatBaris5 }
+                    .Where(part => !string.IsNullOrWhiteSpace(part))
+                    .Select(part => part.Trim().TrimEnd(',', '.'))
+                    .Where(part => !string.IsNullOrEmpty(part))
+                    .ToArray();
+                var alamat = string.Join(", ", alamatParts)
+                    .Replace(",", ", ")  // Replace single comma with comma + space
+                    .Replace("  ", " ")  // Replace double spaces with single space
+                    .Replace(", ,", ",") // Remove any leftover comma-space-comma patterns
+                    .Trim();
+                Cell alamatSpan = new Cell(1, 3).Add(new Paragraph($"{alamat}")).SetBackgroundColor(cellValue);
+                table.AddCell(alamatSpan);
 
-                // Row 7
-                table.AddCell(new Cell().Add(new Paragraph("JABATAN/STESEN")).SetBackgroundColor(cellHeader));
+                // Row 7: 
+                table.AddCell(new Cell().Add(new Paragraph("JBT/STN")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.KodStesen}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH MULA KHIDMAT")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. MULA KHIDMAT")).SetBackgroundColor(cellHeader));
                 var tarikhMulaKhidmat = unitWork.formatDate_dd_mm_yyyy(data.TarikhMulaKhidmat);
                 if (tarikhMulaKhidmat.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja, "TarikhMulaKhidmat", tarikhMulaKhidmat);
-                    tarikhMulaKhidmat = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhMulaKhidmat", $"Could not format date: {data.TarikhMulaKhidmat}");
+                    tarikhMulaKhidmat = string.IsNullOrEmpty(data.TarikhMulaKhidmat) ? "-" : data.TarikhMulaKhidmat;
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{tarikhMulaKhidmat}")).SetBackgroundColor(cellValue));
 
-                // Row 8
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{staffNo}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH SAH JAWATAN")).SetBackgroundColor(cellHeader));
+                // Row 8: 
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
+                var stesen = unitWork.getStesenByKod(data.KodStesen);
+                table.AddCell(new Cell().Add(new Paragraph($"{stesen?.Keterangan ?? ""}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. SAH JAWATAN")).SetBackgroundColor(cellHeader));
                 var tarikhSahJawatan = unitWork.formatDate_dd_mm_yyyy(data.TarikhSahJawatan);
                 if (tarikhSahJawatan.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja, "TarikhSahJawatan", tarikhSahJawatan);
-                    tarikhSahJawatan = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhSahJawatan", $"Could not format date: {data.TarikhSahJawatan}");
+                    tarikhSahJawatan = string.IsNullOrEmpty(data.TarikhSahJawatan) ? "-" : data.TarikhSahJawatan;
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{tarikhSahJawatan}")).SetBackgroundColor(cellValue));
 
-                // Row 9
+                // Row 9: 
                 table.AddCell(new Cell().Add(new Paragraph("DAFTAR GAJI")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.KodBahgDaftarGaji}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("NO. RUJUKAN SAH JAWATAN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.NoRujukanKuasaSahJwt}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.NoRujukanKuasaSahJwt ?? "-"}")).SetBackgroundColor(cellValue));
 
-                // Row 10
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
+                // Row 10: 
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
                 var kod = unitWork.getBDGajiByKod(data.KodBahgDaftarGaji);
                 if (kod == null && !string.IsNullOrEmpty(data.KodBahgDaftarGaji))
                 {
                     unitWork.Log(data.NoPekerja, "BDGaji", $"BDGaji not found for KodBahgDaftarGaji: {data.KodBahgDaftarGaji}");
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{kod?.KtrBDGaji ?? ""}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH MASUK JABATAN")).SetBackgroundColor(cellHeader));
-
+                table.AddCell(new Cell().Add(new Paragraph("TRH. MASUK JABATAN")).SetBackgroundColor(cellHeader));
                 var tarikhMasukJabatan = unitWork.formatDate_dd_mm_yyyy(data.TarikhMasukJabatan);
                 if (tarikhMasukJabatan.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja, "TarikhMasukJabatan", tarikhMasukJabatan);
-                    tarikhMasukJabatan = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhMasukJabatan", $"Could not format date: {data.TarikhMasukJabatan}");
+                    tarikhMasukJabatan = string.IsNullOrEmpty(data.TarikhMasukJabatan) ? "-" : data.TarikhMasukJabatan;
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{tarikhMasukJabatan}")).SetBackgroundColor(cellValue));
-
 
                 string a = "";
                 string b = "";
@@ -222,87 +225,83 @@ namespace huresConsole.Service
                     unitWork.Log(data.NoPekerja, "Jawatan", $"Jawatan not found for codes a={a}, b={b}, KodKelasJawatan={data.KodKelasJawatan}");
                 }
 
-                // Row 11
+                // Row 11: 
                 table.AddCell(new Cell().Add(new Paragraph("JAWATAN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{jwt?.Jawatan1}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{jwt?.Jawatan1 ?? ""}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("KOD KELAS JAWATAN")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.KodKelasJawatan}")).SetBackgroundColor(cellValue));
 
-                // Row 12
+                // Row 12: 
                 table.AddCell(new Cell().Add(new Paragraph("TUGAS")).SetBackgroundColor(cellHeader));
-
-                table.AddCell(new Cell().Add(new Paragraph($"{jwt?.Tugas}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{jwt?.Tugas ?? ""}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("KOD KELAS K/TANGAN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.KodKelasKakitangan}"))
-                    .SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
 
-                // Row 13
+                // Row 13: 
                 table.AddCell(new Cell().Add(new Paragraph("MENYANDANG")).SetBackgroundColor(cellHeader));
                 var menyandang = unitWork.getMenyandangByKod(data.TarafMenyandang);
                 if (menyandang == null && !string.IsNullOrEmpty(data.TarafMenyandang))
                 {
                     unitWork.Log(data.NoPekerja, "Menyandang", $"Menyandang not found for TarafMenyandang: {data.TarafMenyandang}");
                 }
-                table.AddCell(new Cell().Add(new Paragraph($"{menyandang?.KtrMenyandang ?? ""}"))
-                    .SetBackgroundColor(cellValue));
-
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH NAIK PANGKAT")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph($"{menyandang?.KtrMenyandang ?? ""}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. NAIK PANGKAT")).SetBackgroundColor(cellHeader));
                 var tarikhTukarNaikPangkat = unitWork.formatDate_dd_mm_yyyy(data.TarikhTukarNaikPangkat);
                 if (tarikhTukarNaikPangkat.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja, "TarikhTukarNaikPangkat", tarikhTukarNaikPangkat);
-                    tarikhTukarNaikPangkat = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhTukarNaikPangkat", $"Could not format date: {data.TarikhTukarNaikPangkat}");
+                    tarikhTukarNaikPangkat = string.IsNullOrEmpty(data.TarikhTukarNaikPangkat) ? "-" : data.TarikhTukarNaikPangkat;
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{tarikhTukarNaikPangkat}")).SetBackgroundColor(cellValue));
 
-                // Row 14
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("NO RUJUKAN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.NoRujukanKuasa}")).SetBackgroundColor(cellValue));
+                // Row 14: 
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("NO. RUJUKAN")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph($"{data.NoRujukanKuasa ?? "-"}")).SetBackgroundColor(cellValue));
 
-                // Row 15
+                // Row 15: 
                 table.AddCell(new Cell().Add(new Paragraph("KOD GAJI")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.KodGaji}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH BERKUASA")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. BERKUASA")).SetBackgroundColor(cellHeader));
                 var tarikhGajiMula = unitWork.formatDate_dd_mm_yyyy(data.TarikhGajiMula);
                 if (tarikhGajiMula.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja, "TarikhGajiMula", tarikhGajiMula);
-                    tarikhGajiMula = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhGajiMula", $"Could not format date: {data.TarikhGajiMula}");
+                    tarikhGajiMula = string.IsNullOrEmpty(data.TarikhGajiMula) ? "-" : data.TarikhGajiMula;
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{tarikhGajiMula}")).SetBackgroundColor(cellValue));
 
-
-                // Row 16
+                // Row 16: 
                 table.AddCell(new Cell().Add(new Paragraph("GAJI POKOK")).SetBackgroundColor(cellHeader));
                 var gajiPokokFormatted = unitWork.gajiPokok(data.GajiPokok);
                 if (string.IsNullOrEmpty(gajiPokokFormatted) || gajiPokokFormatted == data.GajiPokok)
                 {
                     unitWork.Log(data.NoPekerja, "GajiPokok", $"Could not format GajiPokok value: '{data.GajiPokok}'");
                 }
-                table.AddCell(new Cell().Add(new Paragraph($"{gajiPokokFormatted}"))
-                    .SetBackgroundColor(cellValue));
-
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH KENAIKAN GAJI")).SetBackgroundColor(cellHeader));
-                
+                table.AddCell(new Cell().Add(new Paragraph($"{gajiPokokFormatted}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. KENAIKAN GAJI")).SetBackgroundColor(cellHeader));
                 var tarikhGajiNaik = unitWork.getTarikhGajiNaik(data.NoPekerja, data.TarikhGajiMula, data.KodGaji);
-                if (string.IsNullOrEmpty(tarikhGajiNaik))
-                {
-                    unitWork.Log(data.NoPekerja, "TarikhGajiNaik", $"TarikhGajiNaik not found for NoPekerja: {data.NoPekerja}, TarikhGajiMula: {data.TarikhGajiMula}, KodGaji: {data.KodGaji}");
-                }
-                else
+                if (!string.IsNullOrEmpty(tarikhGajiNaik))
                 {
                     var formattedTarikhGajiNaik = unitWork.formatDate_dd_mm_yyyy(tarikhGajiNaik);
                     if (formattedTarikhGajiNaik.Contains("Error"))
                     {
-                        unitWork.Log(data.NoPekerja, "TarikhGajiNaik", formattedTarikhGajiNaik);
-                        formattedTarikhGajiNaik = "-";
+                        unitWork.Log(data.NoPekerja, "TarikhGajiNaik", $"Could not format date: {tarikhGajiNaik}");
+                        table.AddCell(new Cell().Add(new Paragraph($"{tarikhGajiNaik}")).SetBackgroundColor(cellValue));
                     }
-                    table.AddCell(new Cell().Add(new Paragraph($"{formattedTarikhGajiNaik}")).SetBackgroundColor(cellValue));
+                    else
+                    {
+                        table.AddCell(new Cell().Add(new Paragraph($"{formattedTarikhGajiNaik}")).SetBackgroundColor(cellValue));
+                    }
+                }
+                else
+                {
+                    unitWork.Log(data.NoPekerja, "TarikhGajiNaik", $"TarikhGajiNaik not found for NoPekerja: {data.NoPekerja}, TarikhGajiMula: {data.TarikhGajiMula}, KodGaji: {data.KodGaji}");
+                    table.AddCell(new Cell().Add(new Paragraph("-")).SetBackgroundColor(cellValue));
                 }
 
-                // Row 17
+                // Row 17: 
                 table.AddCell(new Cell().Add(new Paragraph("SKIL GAJI")).SetBackgroundColor(cellHeader));
                 var skilGaji = unitWork.getSkilGajiByKod(data.KodGaji);
                 if (skilGaji == null && !string.IsNullOrEmpty(data.KodGaji))
@@ -310,38 +309,36 @@ namespace huresConsole.Service
                     unitWork.Log(data.NoPekerja, "SkilGaji", $"SkilGaji not found for KodGaji: {data.KodGaji}");
                 }
                 table.AddCell(new Cell().Add(new Paragraph($"{skilGaji?.KtrSkilGaji ?? ""}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellValue));
 
-                // Row 18
-                table.AddCell(new Cell().Add(new Paragraph("NO CUKAI PENDAPATAN")).SetBackgroundColor(cellHeader));
+                // Row 18: 
+                table.AddCell(new Cell().Add(new Paragraph("NO. CUKAI PENDAPATAN")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.NoCukaiPendapatan}")).SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("NO KWSP")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph("NO. KWSP")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{data.NoEpf}")).SetBackgroundColor(cellValue));
 
-                // Row 19
+                // Row 19: 
                 table.AddCell(new Cell().Add(new Paragraph("KOD REKOD SEPI")).SetBackgroundColor(cellHeader));
                 var rekodSepi = unitWork.getRekodSepiByKod(data.KodRekodSepi);
-                table.AddCell(new Cell().Add(new Paragraph($"{rekodSepi?.KtrRekodSepi}"))
-                    .SetBackgroundColor(cellValue));
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH MULA SEPI")).SetBackgroundColor(cellHeader));
-                // SAMPLE 2
-                // SAMPLE
+                string rekodSepiText = rekodSepi != null ? $"{rekodSepi.KtrRekodSepi} ({data.KodRekodSepi})" : "";
+                table.AddCell(new Cell().Add(new Paragraph($"{rekodSepiText}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("TRH. MULA SEPI")).SetBackgroundColor(cellHeader));
                 var TarikhSepi = unitWork.formatDate_dd_mm_yyyy(data.TarikhSepi);
                 if (TarikhSepi.Contains("Error"))
                 {
-                    unitWork.Log(data.NoPekerja,"TarikhSepi",TarikhSepi);
-                    TarikhSepi = "-";
+                    unitWork.Log(data.NoPekerja, "TarikhSepi", $"Could not format date: {data.TarikhSepi}");
+                    TarikhSepi = string.IsNullOrEmpty(data.TarikhSepi) ? "-" : data.TarikhSepi;
                 }
-                //tempDate = string.IsNullOrEmpty(data.TarikhSepi) ? (DateTime?)null : DateTime.ParseExact(data.TarikhSepi, "ddMMyyyy", null);
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_dd_mm_yyyy(data.TarikhSepi)}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{TarikhSepi}")).SetBackgroundColor(cellValue));
 
-                // Row 20
+                // Row 20: 
                 table.AddCell(new Cell().Add(new Paragraph("OPSYEN 'CASH INDICATOR'")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.OpsyenCashIndicator ?? ""}"))
-                    .SetBackgroundColor(cellValue));
+                string cashIndicator = string.IsNullOrEmpty(data.OpsyenCashIndicator) ? "-" : data.OpsyenCashIndicator;
+                table.AddCell(new Cell().Add(new Paragraph($"{cashIndicator}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("TAHUN OPSYEN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{data.TahunOpsyen ?? ""}")).SetBackgroundColor(cellValue));
+                string tahunOpsyen = string.IsNullOrEmpty(data.TahunOpsyen) || data.TahunOpsyen == "0000" ? "-" : data.TahunOpsyen;
+                table.AddCell(new Cell().Add(new Paragraph($"{tahunOpsyen}")).SetBackgroundColor(cellValue));
 
                 // Add table to document
                 document.Add(table);
@@ -349,6 +346,7 @@ namespace huresConsole.Service
 
             Console.WriteLine("PDF created: " + Path.GetFullPath(dest));
         }
+
         public void gaji_asas(string staffNo)
         {
             DeviceRgb header = new DeviceRgb(0x46, 0x82, 0xB4);
@@ -468,7 +466,10 @@ namespace huresConsole.Service
                         .SetBackgroundColor(cellValue)); // jumlah perubahan gaji
                     table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.gajiPokok(i.JumlahPrestasi)}"))
                         .SetBackgroundColor(cellValue)); // jumlah elaun prestasi
-                    table2.AddCell(new Cell().Add(new Paragraph($"{i.NoRujukanPerubahanGaji}"))
+                    string noRujukan = string.IsNullOrEmpty(i.NoRujukanPerubahanGaji) || 
+                                       i.NoRujukanPerubahanGaji.Trim() == "" || 
+                                       i.NoRujukanPerubahanGaji == "000000" ? "-" : i.NoRujukanPerubahanGaji.Trim();
+                    table2.AddCell(new Cell().Add(new Paragraph($"{noRujukan}"))
                         .SetBackgroundColor(cellValue)); // no rujukan
                     row++;
                 }
@@ -506,8 +507,8 @@ namespace huresConsole.Service
             Directory.CreateDirectory(outputDir);
 
             dest = Path.Combine(outputDir, dest);
-            
-            
+
+
             DateTime? tempDate = null;
             string formatTempDate = "";
 
@@ -585,7 +586,7 @@ namespace huresConsole.Service
 
                 // Row 5
                 table.AddCell(new Cell().Add(new Paragraph("KELAYAKAN CUTI")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.kelayakanCuti(leave.KelayakanCuti) }")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.kelayakanCuti(leave.KelayakanCuti)}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("OPSYEN TUKAR WANG TUNAI")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.opsTukarWangTunaiTahunan(leave.OpsTukarWangTunaiThn)}")).SetBackgroundColor(cellValue));
 
@@ -641,7 +642,7 @@ namespace huresConsole.Service
                 // Row 12
                 table.AddCell(new Cell().Add(new Paragraph("CUTI REHAT TAHUN KUMPUL LAMA"))
                     .SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph("0.0")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.JumlahCutiRehatTahunKumpul)}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("CUTI SEBERANG LAUT KUMPUL"))
                     .SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiSeberangLaut)}")).SetBackgroundColor(cellValue));
@@ -689,12 +690,12 @@ namespace huresConsole.Service
             for (int i = 83; i <= 99; i++)
             {
                 var leave = unitWork.getLeaveListByNoPekerja(staffNo, i.ToString());
-                if(leave.Count() <= 0)
+                if (leave.Count() <= 0)
                     continue;
-                senarai_cuti(asas,i.ToString(), leave);
+                senarai_cuti(asas, i.ToString(), leave);
             }
         }
-        public void senarai_cuti(DATAASAS asas,string year,List<LeaveListDto> leaveListDto)
+        public void senarai_cuti(DATAASAS asas, string year, List<LeaveListDto> leaveListDto)
         {
             DeviceRgb header = new DeviceRgb(0x46, 0x82, 0xB4);
             DeviceRgb cellHeader = new DeviceRgb(204, 240, 255);
