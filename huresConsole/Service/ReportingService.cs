@@ -543,17 +543,17 @@ namespace huresConsole.Service
 
                 // Row 3
                 table.AddCell(new Cell().Add(new Paragraph("PERUBAHAN LAYAK")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{leave.PerubahanLayak}")).SetBackgroundColor(cellValue));
+                string perubahanLayak = string.IsNullOrEmpty(leave.PerubahanLayak) ? "-" : leave.PerubahanLayak;
+                table.AddCell(new Cell().Add(new Paragraph($"{perubahanLayak}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("TAHUN CUTI")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{leave.TahunCuti}")).SetBackgroundColor(cellValue));
 
                 // Row 4
-                table.AddCell(new Cell().Add(new Paragraph("TARIKH KUASA")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph("TARIKH KUATKUASA")).SetBackgroundColor(cellHeader));
 
                 if (leave.TarikhKuatkuasa != "00000000")
                 {
                     DateTime tempDateParsed;
-
                     // Try multiple date formats safely
                     if (DateTime.TryParseExact(leave.TarikhKuatkuasa, "ddMMyyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out tempDateParsed))
                     {
@@ -577,7 +577,11 @@ namespace huresConsole.Service
                     formatTempDate = "";
                 }
 
-                table.AddCell(new Cell().Add(new Paragraph($"{formatTempDate}")).SetBackgroundColor(cellValue));
+                // Display "-" if empty, otherwise show the formatted date
+                string displayTarikhKuatkuasa = string.IsNullOrEmpty(formatTempDate) ? "-" : formatTempDate;
+                table.AddCell(new Cell().Add(new Paragraph($"{displayTarikhKuatkuasa}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph($"")).SetBackgroundColor(cellValue));
 
                 // Row 5
                 table.AddCell(new Cell().Add(new Paragraph("KELAYAKAN CUTI")).SetBackgroundColor(cellHeader));
@@ -598,7 +602,9 @@ namespace huresConsole.Service
                     table.AddCell(new Cell().Add(new Paragraph($"{unitWork.cutiLamaDibawa(leave.CutiLamaDibawa, kodCuti.KodLeave)}")).SetBackgroundColor(cellValue));
                 }
                 table.AddCell(new Cell().Add(new Paragraph("TAHUN OPSYEN")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{asas.TahunOpsyen ?? "-"}")).SetBackgroundColor(cellValue));
+                // Handle "0000" case in addition to null/empty
+                string tahunOpsyen = string.IsNullOrEmpty(asas.TahunOpsyen) || asas.TahunOpsyen == "0000" ? "-" : asas.TahunOpsyen;
+                table.AddCell(new Cell().Add(new Paragraph($"{tahunOpsyen}")).SetBackgroundColor(cellValue));
 
                 // Row 7
                 table.AddCell(new Cell().Add(new Paragraph("JUMLAH CUTI BAGI TAHUN")).SetBackgroundColor(cellHeader));
@@ -628,12 +634,14 @@ namespace huresConsole.Service
                 table.AddCell(new Cell().Add(new Paragraph("CUTI REHAT TAHUN KUMPUL")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiRehatTahunKumpul)}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("TAHUN MULA CUTI DIKUMPUL")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.TahunMulaCutiDikumpul)}")).SetBackgroundColor(cellValue));
+                string tahunMulaCuti = unitWork.generalCutiFormat(leave.TahunMulaCutiDikumpul);
+                if (tahunMulaCuti == "0.0") tahunMulaCuti = "-";
+                table.AddCell(new Cell().Add(new Paragraph($"{tahunMulaCuti}")).SetBackgroundColor(cellValue));
 
                 // Row 12
                 table.AddCell(new Cell().Add(new Paragraph("CUTI REHAT TAHUN KUMPUL LAMA"))
                     .SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{"not pull yey"}")).SetBackgroundColor(cellValue));
+                table.AddCell(new Cell().Add(new Paragraph("0.0")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("CUTI SEBERANG LAUT KUMPUL"))
                     .SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiSeberangLaut)}")).SetBackgroundColor(cellValue));
@@ -653,18 +661,20 @@ namespace huresConsole.Service
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiDibekukan)}")).SetBackgroundColor(cellValue));
 
                 // Row 15
-                table.AddCell(
-                    new Cell().Add(new Paragraph("CUTI SEBERANG LAUT DIAMBIL")).SetBackgroundColor(cellHeader));
+                table.AddCell(new Cell().Add(new Paragraph("CUTI SEBERANG LAUT DIAMBIL")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiSeberangLautDiambil)}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("CUTI TUKAR KE WANG TUNAI KUMPUL"))
                     .SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiTukarWangTunaiDikumpul)}")).SetBackgroundColor(cellValue));
+                string cutiTukarWangTunaiKumpul = unitWork.generalCutiFormat(leave.CutiTukarWangTunaiDikumpul);
+                if (cutiTukarWangTunaiKumpul == "0.0") cutiTukarWangTunaiKumpul = "0.00";
+                table.AddCell(new Cell().Add(new Paragraph($"{cutiTukarWangTunaiKumpul}")).SetBackgroundColor(cellValue));
 
                 // Row 16
                 table.AddCell(new Cell().Add(new Paragraph("CUTI TUKAR KE WANG TUNAI")).SetBackgroundColor(cellHeader));
                 table.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(leave.CutiTukarKeWangTunai)}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("NO RUJUKAN CUTI SAKIT")).SetBackgroundColor(cellHeader));
-                table.AddCell(new Cell().Add(new Paragraph($"{leave.NoRujukanCutiSakit90}")).SetBackgroundColor(cellValue));
+                string noRujukanCutiSakit = string.IsNullOrEmpty(leave.NoRujukanCutiSakit90) ? "-" : leave.NoRujukanCutiSakit90;
+                table.AddCell(new Cell().Add(new Paragraph($"{noRujukanCutiSakit}")).SetBackgroundColor(cellValue));
                 // Add table to document
                 document.Add(table);
             }
@@ -771,13 +781,27 @@ namespace huresConsole.Service
                 foreach (var x in leaveListDto)
                 {
                     table2.AddCell(new Cell().Add(new Paragraph($"{row}")).SetBackgroundColor(cellValue));
-                    table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_ddMMMyyyy(x.TarikhCutiMula)}")).SetBackgroundColor(cellValue));
-                    table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_ddMMMyyyy(x.TarikhCutiTamat)}")).SetBackgroundColor(cellValue));
+                    table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_dd_mm_yyyy(x.TarikhCutiMula)}")).SetBackgroundColor(cellValue));
+                    table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_dd_mm_yyyy(x.TarikhCutiTamat)}")).SetBackgroundColor(cellValue));
                     var cuti = unitWork.getCutibyKod(x.JenisCuti);
-                    table2.AddCell(new Cell().Add(new Paragraph($"{cuti.KtrCuti}")).SetBackgroundColor(cellValue));
-                    table2.AddCell(new Cell().Add(new Paragraph($"{x.BilHariAmRehat}")).SetBackgroundColor(cellValue));
+
+                    // Format JENIS CUTI with code appended
+                    string jenisCutiText = $"{cuti.KtrCuti}({x.JenisCuti})";
+                    table2.AddCell(new Cell().Add(new Paragraph($"{jenisCutiText}")).SetBackgroundColor(cellValue));
+
+                    // Format HARI AM - show "-" for empty/null/00/spaces, otherwise show the value
+                    string hariAm = string.IsNullOrEmpty(x.BilHariAmRehat) ||
+                                    x.BilHariAmRehat.Trim() == "" ||
+                                    x.BilHariAmRehat.Trim() == "00" ||
+                                    x.BilHariAmRehat.Trim() == "0" ? "-" : x.BilHariAmRehat.Trim();
+                    table2.AddCell(new Cell().Add(new Paragraph($"{hariAm}")).SetBackgroundColor(cellValue));
+
                     table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(x.BilHariCuti)}")).SetBackgroundColor(cellValue));
-                    table2.AddCell(new Cell().Add(new Paragraph($"{x.NoRujukanCuti}")).SetBackgroundColor(cellValue));
+
+                    // Format NO RUJUKAN CUTI - show "-" if empty/null, otherwise show the value
+                    string noRujukan = string.IsNullOrEmpty(x.NoRujukanCuti) || x.NoRujukanCuti.Trim() == "" ? "-" : x.NoRujukanCuti.Trim();
+                    table2.AddCell(new Cell().Add(new Paragraph($"{noRujukan}")).SetBackgroundColor(cellValue));
+
                     row++;
                 }
 
