@@ -15,7 +15,6 @@ var services = new ServiceCollection();
 services.AddDbContext<HuresContext>(options =>
     options.UseMySql(configuration.GetConnectionString("HuresConnection"),
         new MySqlServerVersion(new Version(5, 5, 62))
-
         ));
 
 services.AddSingleton<IConfiguration>(configuration);
@@ -25,23 +24,25 @@ services.AddScoped<ReportingService>();
 
 var serviceProvider = services.BuildServiceProvider();
 
-
 char _exit = 'n';
-var cancelSource = new CancellationTokenSource();
-Console.CancelKeyPress += (sender, e) =>
-{
-    Console.WriteLine("\nBulk processing canceled by user.");
-    cancelSource.Cancel();
-    e.Cancel = true; // prevent immediate app termination
-};
 
 while (_exit != 'y')
 {
+    // Create a new cancellation token for each operation
+    var cancelSource = new CancellationTokenSource();
+    Console.CancelKeyPress += (sender, e) =>
+    {
+        Console.WriteLine("\nBulk processing canceled by user.");
+        cancelSource.Cancel();
+        e.Cancel = true; // prevent immediate app termination
+    };
+
     Console.WriteLine("\n--- Menu ---");
     Console.WriteLine("1. Process by ID");
     Console.WriteLine("2. Bulk process (press Ctrl+C to cancel)");
     Console.Write("Choose (1 or 2): ");
     var input = Console.ReadLine();
+
     using var scope = serviceProvider.CreateScope();
     var reportingService = scope.ServiceProvider.GetRequiredService<ReportingService>();
     var unitWork = scope.ServiceProvider.GetRequiredService<UnitWork>();
@@ -58,7 +59,7 @@ while (_exit != 'y')
             Console.WriteLine($"");
             Console.WriteLine($"start processing for gaji asas");
             reportingService.gaji_asas(id);
-            Console.WriteLine($"end processing for maklumat asas");
+            Console.WriteLine($"end processing for gaji asas");
             Console.WriteLine($"");
             Console.WriteLine($"start processing for ringkasan cuti");
             reportingService.head_ringkasan_cuti(id);
@@ -70,7 +71,6 @@ while (_exit != 'y')
             Console.WriteLine($"");
 
             Console.WriteLine($"Process Complete for Staff No : {id}");
-
             break;
 
         case "2":
@@ -79,23 +79,39 @@ while (_exit != 'y')
             try
             {
                 var list = unitWork.getUnprocessedBatch();
+
                 // get all unflagged staff
                 foreach (var noPekerja in list)
                 {
+                    // Check for cancellation before processing each staff member
+                    cancelSource.Token.ThrowIfCancellationRequested();
+
                     try
                     {
                         Console.WriteLine($"start processing for maklumat asas");
                         reportingService.maklumat_asas(noPekerja);
                         Console.WriteLine($"end processing for maklumat asas");
                         Console.WriteLine($"");
+
+                        // Check for cancellation between operations
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
                         Console.WriteLine($"start processing for gaji asas");
                         reportingService.gaji_asas(noPekerja);
                         Console.WriteLine($"end processing for gaji asas");
                         Console.WriteLine($"");
+
+                        // Check for cancellation between operations
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
                         Console.WriteLine($"start processing for ringkasan cuti");
                         reportingService.head_ringkasan_cuti(noPekerja);
                         Console.WriteLine($"end processing for ringkasan cuti");
                         Console.WriteLine($"");
+
+                        // Check for cancellation between operations
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
                         Console.WriteLine($"start processing for senarai cuti");
                         reportingService.head_senarai_cuti(noPekerja);
                         Console.WriteLine($"end processing for senarai cuti");
@@ -103,6 +119,11 @@ while (_exit != 'y')
 
                         Console.WriteLine($"Process Complete for Staff No : {noPekerja}");
                         var forNoReason = unitWork.updateProcessedDataAsas(noPekerja);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Console.WriteLine($"Processing cancelled while working on Staff No: {noPekerja}");
+                        throw; // Re-throw to exit the main loop
                     }
                     catch (Exception ex)
                     {
@@ -115,9 +136,12 @@ while (_exit != 'y')
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Bulk processing interrupted.");
+                Console.WriteLine("Bulk processing was successfully cancelled by user.");
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred during bulk processing: {ex.Message}");
+            }
             break;
 
         default:
@@ -125,12 +149,9 @@ while (_exit != 'y')
             Console.WriteLine("Invalid input. Please enter 1 or 2.");
             _exit = 'n';
             continue;
-            break;
     }
 
     Console.Write("Do you want to exit? (Y/N): ");
     _exit = char.ToLower(Console.ReadKey().KeyChar);
     Console.WriteLine();
 }
-
-

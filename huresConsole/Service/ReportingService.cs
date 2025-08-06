@@ -36,7 +36,7 @@ namespace huresConsole.Service
             //             html = html.Replace("{{Title}}", "Hello PDF")
             //                 .Replace("{{Body}}", message); // use message parameter here
             // #if DEBUG
-            //             outputPath = Path.Combine("output", "");
+            //             outputPath = Path.Combine("output", "");2
             // #endif
             //             string dateFolder = DateTime.Now.ToString("yyyyMMdd");
             //             string outputDir = Path.Combine(outputPath, "report", dateFolder);
@@ -127,10 +127,20 @@ namespace huresConsole.Service
                 // Row 5: 
                 table.AddCell(new Cell().Add(new Paragraph("BANGSA")).SetBackgroundColor(cellHeader));
                 var keturunan = unitWork.getKeturunByKod(data.Keturunan);
-                table.AddCell(new Cell().Add(new Paragraph($"{keturunan.KtrKeturunan}")).SetBackgroundColor(cellValue));
+                if (keturunan == null && !string.IsNullOrEmpty(data.Keturunan))
+                {
+                    unitWork.Log(data.NoPekerja, "Keturunan", $"Keturunan not found for code: {data.Keturunan}");
+                }
+                string keturunanText = keturunan?.KtrKeturunan ?? (string.IsNullOrEmpty(data.Keturunan) ? "-" : data.Keturunan);
+                table.AddCell(new Cell().Add(new Paragraph($"{keturunanText}")).SetBackgroundColor(cellValue));
                 table.AddCell(new Cell().Add(new Paragraph("TARAF KAHWIN")).SetBackgroundColor(cellHeader));
                 var tarafKahwin = unitWork.getTarafKahwinByKod(data.TarafKahwin);
-                table.AddCell(new Cell().Add(new Paragraph($"{tarafKahwin.KtrTarafKahwin}")).SetBackgroundColor(cellValue));
+                if (tarafKahwin == null && !string.IsNullOrEmpty(data.TarafKahwin))
+                {
+                    unitWork.Log(data.NoPekerja, "TarafKahwin", $"TarafKahwin not found for code: {data.TarafKahwin}");
+                }
+                string tarafKahwinText = tarafKahwin?.KtrTarafKahwin ?? (string.IsNullOrEmpty(data.TarafKahwin) ? "-" : data.TarafKahwin);
+                table.AddCell(new Cell().Add(new Paragraph($"{tarafKahwinText}")).SetBackgroundColor(cellValue));
 
                 // Row 6: 
                 table.AddCell(new Cell().Add(new Paragraph("ALAMAT")).SetBackgroundColor(cellHeader));
@@ -365,6 +375,14 @@ namespace huresConsole.Service
 
             var asas = unitWork.getDataAsasByNoPekerja(staffNo);
             var data = unitWork.getGajiListByNoPekerja(staffNo);
+
+            // Add this null check
+            if (asas == null)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"No report found for {staffNo} to generate report Gaji Asas");
+                return;
+            }
 
 
             using (PdfWriter writer = new PdfWriter(dest))
@@ -750,14 +768,15 @@ namespace huresConsole.Service
 
                 float[] columnWidths2 =
                 {
-                    7, // index
-                    12, // tarikh mula cuti
-                    12, // tarik tamat cuti
-                    22, // jenis cuti
-                    12, // hari am
-                    12, // hari cuti
-                    7, // no rujukan cuti
-                }; // Customize per row requirement
+                    6, // index
+                    11, // tarikh mula cuti
+                    11, // tarik tamat cuti
+                    20, // jenis cuti
+                    10, // hari am
+                    10, // hari cuti
+                    10, // petunjuk cuti (NEW)
+                    22, // no rujukan cuti
+                };
                 Table table2 = new Table(UnitValue.CreatePercentArray(columnWidths2)).UseAllAvailableWidth();
 
                 table2.SetFont(defaultFont).SetFontSize(6);
@@ -774,6 +793,8 @@ namespace huresConsole.Service
                     .SetFontColor(DeviceGray.WHITE).SetFont(boldFont));
                 table2.AddCell(new Cell().Add(new Paragraph($"HARI CUTI")).SetBackgroundColor(header)
                     .SetFontColor(DeviceGray.WHITE).SetFont(boldFont));
+                table2.AddCell(new Cell().Add(new Paragraph("PETUNJUK CUTI")).SetBackgroundColor(header)
+                    .SetFontColor(DeviceGray.WHITE).SetFont(boldFont));
                 table2.AddCell(new Cell().Add(new Paragraph("NO RUJUKAN CUTI")).SetBackgroundColor(header)
                     .SetFontColor(DeviceGray.WHITE).SetFont(boldFont));
 
@@ -786,8 +807,18 @@ namespace huresConsole.Service
                     table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.formatDate_dd_mm_yyyy(x.TarikhCutiTamat)}")).SetBackgroundColor(cellValue));
                     var cuti = unitWork.getCutibyKod(x.JenisCuti);
 
-                    // Format JENIS CUTI with code appended
-                    string jenisCutiText = $"{cuti.KtrCuti}({x.JenisCuti})";
+                    // Format JENIS CUTI with code appended - handle null cuti
+                    string jenisCutiText;
+                    if (cuti != null)
+                    {
+                        jenisCutiText = $"{cuti.KtrCuti}({x.JenisCuti})";
+                    }
+                    else
+                    {
+                        jenisCutiText = $"UNKNOWN LEAVE TYPE({x.JenisCuti})";
+                        // Optional: Log this for debugging
+                        // unitWork.Log(x.NoPekerja, "JenisCuti", $"Leave type not found: {x.JenisCuti}");
+                    }
                     table2.AddCell(new Cell().Add(new Paragraph($"{jenisCutiText}")).SetBackgroundColor(cellValue));
 
                     // Format HARI AM - show "-" for empty/null/00/spaces, otherwise show the value
@@ -798,6 +829,10 @@ namespace huresConsole.Service
                     table2.AddCell(new Cell().Add(new Paragraph($"{hariAm}")).SetBackgroundColor(cellValue));
 
                     table2.AddCell(new Cell().Add(new Paragraph($"{unitWork.generalCutiFormat(x.BilHariCuti)}")).SetBackgroundColor(cellValue));
+
+                    // Format PETUNJUK CUTI - show "-" if empty/null, otherwise show the value
+                    string petunjukCuti = string.IsNullOrEmpty(x.PetunjukCuti) || x.PetunjukCuti.Trim() == "" ? "-" : x.PetunjukCuti.Trim();
+                    table2.AddCell(new Cell().Add(new Paragraph($"{petunjukCuti}")).SetBackgroundColor(cellValue));
 
                     // Format NO RUJUKAN CUTI - show "-" if empty/null, otherwise show the value
                     string noRujukan = string.IsNullOrEmpty(x.NoRujukanCuti) || x.NoRujukanCuti.Trim() == "" ? "-" : x.NoRujukanCuti.Trim();

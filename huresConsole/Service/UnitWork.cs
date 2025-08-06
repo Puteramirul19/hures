@@ -280,7 +280,6 @@ namespace huresConsole.Service
             }
         }
 
-
         public DATAASAS getDataAsasByNoPekerja(string noPekerja)
         {
             return context.DATAASAS.Where(w => w.NoPekerja == noPekerja).FirstOrDefault();
@@ -471,6 +470,38 @@ namespace huresConsole.Service
         public STESEN getStesenByKod(string kod)
         {
             return context.STESEN.Where(w => w.KodStesen == kod).FirstOrDefault();
+        }
+
+        public string decodePetunjukCuti(string petunjukCutiCode)
+        {
+            if (string.IsNullOrEmpty(petunjukCutiCode) || petunjukCutiCode.Trim() == "")
+                return "-";
+
+            switch (petunjukCutiCode.Trim().ToUpper())
+            {
+                case "A":
+                    return "AKTIF";
+                case "B":
+                    return "BATAL";
+                case "C":
+                    return "CUTI";
+                case "D":
+                    return "DITANGGUHKAN";
+                case "E":
+                    return "EXPIRED";
+                case "K":
+                    return "DIKUATKUASAKAN";
+                case "L":
+                    return "LULUS";
+                case "P":
+                    return "PENDING";
+                case "T":
+                    return "TERTUTUP";
+                case "0":
+                    return "TIADA";
+                default:
+                    return petunjukCutiCode.Trim();
+            }
         }
 
         #endregion
