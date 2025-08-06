@@ -87,6 +87,11 @@ namespace huresConsole.Service
                 {
                     result += gajiPokok.Substring(2, 2) + ".";
                 }
+                else if (gajiPokok[0] == '0' && gajiPokok[1] == '0' && gajiPokok[2] == '0')
+                {
+                    // Handle cases like "000250" -> "2.50"
+                    result += gajiPokok.Substring(3, 1) + ".";
+                }
 
                 result += gajiPokok.Substring(4, 2); // Last 2 digits for 6-digit value
             }
