@@ -54,49 +54,16 @@ namespace huresConsole.Service
             if (gajiPokok.All(c => c == '0'))
                 return "0.00";
 
-            string result = "";
-
-            if (gajiPokok.Length == 7)
+            // Convert to decimal and format back
+            if (decimal.TryParse(gajiPokok, out decimal value))
             {
-                if (gajiPokok[0] == '0' && gajiPokok[1] != '0')
-                {
-                    result += gajiPokok.Substring(1, 4) + ".";
-                }
-                else if (gajiPokok[0] != '0')
-                {
-                    result += gajiPokok.Substring(0, 5) + ".";
-                }
-                else if (gajiPokok[0] == '0' && gajiPokok[1] == '0' && gajiPokok[2] != '0')
-                {
-                    result += gajiPokok.Substring(2, 3) + ".";
-                }
-
-                result += gajiPokok.Substring(5, 2); // Always append last 2 digits
-            }
-            else if (gajiPokok.Length == 6)
-            {
-                if (gajiPokok[0] == '0' && gajiPokok[1] != '0')
-                {
-                    result += gajiPokok.Substring(1, 3) + ".";
-                }
-                else if (gajiPokok[0] != '0')
-                {
-                    result += gajiPokok.Substring(0, 4) + ".";
-                }
-                else if (gajiPokok[0] == '0' && gajiPokok[1] == '0' && gajiPokok[2] != '0')
-                {
-                    result += gajiPokok.Substring(2, 2) + ".";
-                }
-                else if (gajiPokok[0] == '0' && gajiPokok[1] == '0' && gajiPokok[2] == '0')
-                {
-                    // Handle cases like "000250" -> "2.50"
-                    result += gajiPokok.Substring(3, 1) + ".";
-                }
-
-                result += gajiPokok.Substring(4, 2); // Last 2 digits for 6-digit value
+                // Divide by 100 to get the decimal format (assuming last 2 digits are cents)
+                decimal formattedValue = value / 100m;
+                return formattedValue.ToString("0.00");
             }
 
-            return result;
+            // Fallback to original value if parsing fails
+            return gajiPokok;
         }
 
         public string kelayakanCuti(string KelayakanCuti)
