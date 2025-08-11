@@ -367,6 +367,13 @@ namespace huresConsole.Service
         public bool updateProcessedDataAsas(string noPekerja)
         {
             var x = context.DATAASAS.Where(w => w.NoPekerja == noPekerja).FirstOrDefault();
+
+            if (x == null)
+            {
+                Console.WriteLine($"Warning: No DATAASAS record found for NoPekerja: {noPekerja}");
+                return false;
+            }
+
             x.isProcessed = true;
             context.SaveChanges();
             return true;

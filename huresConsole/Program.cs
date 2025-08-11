@@ -40,7 +40,8 @@ while (_exit != 'y')
     Console.WriteLine("\n--- Menu ---");
     Console.WriteLine("1. Process by ID");
     Console.WriteLine("2. Bulk process (press Ctrl+C to cancel)");
-    Console.Write("Choose (1 or 2): ");
+    Console.WriteLine("3. Bulk process selected IDs from CSV (press Ctrl+C to cancel)");
+    Console.Write("Choose (1, 2, or 3): ");
     var input = Console.ReadLine();
 
     using var scope = serviceProvider.CreateScope();
@@ -144,9 +145,93 @@ while (_exit != 'y')
             }
             break;
 
+        case "3":
+            Console.Write("Enter CSV file path (or press Enter for 'ids.csv'): ");
+            var csvPath = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(csvPath))
+            {
+                csvPath = "ids.csv";
+            }
+
+            try
+            {
+                var selectedIds = ReadIdsFromCsv(csvPath);
+
+                if (selectedIds.Count == 0)
+                {
+                    Console.WriteLine("No IDs found in CSV file.");
+                    break;
+                }
+
+                Console.WriteLine($"Found {selectedIds.Count} IDs in CSV file.");
+                Console.WriteLine("Starting bulk processing for selected IDs... Press Ctrl+C to cancel.\n");
+
+                int processed = 0;
+                foreach (var noPekerja in selectedIds)
+                {
+                    cancelSource.Token.ThrowIfCancellationRequested();
+
+                    try
+                    {
+                        Console.WriteLine($"Processing {processed + 1}/{selectedIds.Count}: Staff No {noPekerja}");
+
+                        Console.WriteLine($"start processing for maklumat asas");
+                        reportingService.maklumat_asas(noPekerja);
+                        Console.WriteLine($"end processing for maklumat asas");
+                        Console.WriteLine($"");
+
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
+                        Console.WriteLine($"start processing for gaji asas");
+                        reportingService.gaji_asas(noPekerja);
+                        Console.WriteLine($"end processing for gaji asas");
+                        Console.WriteLine($"");
+
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
+                        Console.WriteLine($"start processing for ringkasan cuti");
+                        reportingService.head_ringkasan_cuti(noPekerja);
+                        Console.WriteLine($"end processing for ringkasan cuti");
+                        Console.WriteLine($"");
+
+                        cancelSource.Token.ThrowIfCancellationRequested();
+
+                        Console.WriteLine($"start processing for senarai cuti");
+                        reportingService.head_senarai_cuti(noPekerja);
+                        Console.WriteLine($"end processing for senarai cuti");
+                        Console.WriteLine($"");
+
+                        var forNoReason = unitWork.updateProcessedDataAsas(noPekerja);
+                        processed++;
+                        Console.WriteLine($"✓ Process Complete for Staff No: {noPekerja} ({processed}/{selectedIds.Count})\n");
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Console.WriteLine($"Processing cancelled while working on Staff No: {noPekerja}");
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"✗ Error processing {noPekerja}: {ex.Message}");
+                    }
+                }
+
+                Console.WriteLine($"Selected IDs bulk processing completed! Processed {processed}/{selectedIds.Count} successfully.");
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("Selected IDs bulk processing was cancelled.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during bulk processing: {ex.Message}");
+            }
+            break;
+
         default:
             Console.Clear();
-            Console.WriteLine("Invalid input. Please enter 1 or 2.");
+            Console.WriteLine("Invalid input. Please enter 1, 2, or 3.");
             _exit = 'n';
             continue;
     }
@@ -154,4 +239,31 @@ while (_exit != 'y')
     Console.Write("Do you want to exit? (Y/N): ");
     _exit = char.ToLower(Console.ReadKey().KeyChar);
     Console.WriteLine();
+}
+
+static List<string> ReadIdsFromCsv(string filePath)
+{
+    var ids = new List<string>();
+    try
+    {
+        var lines = File.ReadAllLines(filePath);
+        foreach (var line in lines)
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                // If CSV has headers or other columns, split by comma and take first column
+                var parts = line.Split(',');
+                var id = parts[0].Trim().Trim('"'); // Remove quotes if any
+                if (!string.IsNullOrWhiteSpace(id) && id != "NoPekerja") // Skip header
+                {
+                    ids.Add(id);
+                }
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error reading CSV file: {ex.Message}");
+    }
+    return ids;
 }
